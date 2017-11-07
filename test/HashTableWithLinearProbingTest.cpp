@@ -27,13 +27,14 @@ TEST(HashTableWithLinearProbing, add) {
 }
 
 TEST(HashTableWithLinearProbing, asMap) {
-  HashTableWithLinearProbing<int, 1> map;
+  HashTableWithLinearProbing<int, 2> map;
   EXPECT_EQ(0, map["x"]);
+  EXPECT_EQ(0, map["y"]);
 
   map["x"] = 10;
   EXPECT_EQ(10, map["x"]);
 
-  EXPECT_ANY_THROW(map["y"]);
+  EXPECT_ANY_THROW(map["z"]);
 }
 
 TEST(HashTableWithLinearProbing, iterator) {
