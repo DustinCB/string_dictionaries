@@ -14,25 +14,29 @@ class HashTableWithLinearProbing {
  public:
   using _Key = std::string;
 
-  void insert(const _Key &_key, const _Value &_value) {
-    //TODO Add case for full table
-    if (size == _Size)
-      throw std::exception{};
+  bool insert(const _Key &_key, const _Value &_value) {
+    if (currentSize == _Size)
+      return false;
 
     auto i = hash(_key) % _Size;
     while (table[i].first && table[i].second.first != _key) {
       i = (i + 1) % _Size;
     }
 
+    if (table[i].first)
+      return false;
+
     table[i].second.second = _value;
     if (!table[i].first) {
       table[i].second.first = _key;
       table[i].first = true;
-      size++;
+      currentSize++;
     }
+
+    return true;
   }
 
-  _Value &search(const _Key &_key) {
+  const _Value &search(const _Key &_key) const {
     auto i = hash(_key) % _Size;
     while (table[i].first && table[i].second.first != _key) {
       i = (i + 1) % _Size;
@@ -57,66 +61,70 @@ class HashTableWithLinearProbing {
     if (!table[i].first) {
       table[i].second.first = _key;
       table[i].first = true;
-      size++;
+      currentSize++;
     }
 
     return table[i].second.second;
   }
 
+  std::size_t size() const {
+    return currentSize;
+  }
+
  private:
-  using InnerContainer = std::array<std::pair<bool, std::pair<_Key, _Value>>, _Size>;
+  using InnerContainer = std::vector<std::pair<bool, std::pair<_Key, _Value>>>;
 
  public:
-  class iterator {
+  class Iterator {
    public:
-    iterator(const typename InnerContainer::iterator &_it, const typename InnerContainer::iterator &_eit) : it{_it},
-                                                                                                            eit{_eit} {}
-    iterator(const iterator &_it) : it{_it.it}, eit{_it.eit} {}
+    Iterator(const typename InnerContainer::iterator &_it,
+             const typename InnerContainer::iterator &_eit) : it{_it},
+                                                              eit{_eit} {}
 
-    std::pair<_Key, _Value> &operator*() {
-      return it->second;
-    }
+    Iterator(const Iterator &_it) : it{_it.it}, eit{_it.eit} {}
 
-    iterator &operator++() {
+    std::pair<_Key, _Value> &operator*() { return it->second; }
+
+    Iterator &operator++() {
       while (it != eit && !(++it)->first) {}
       return *this;
     }
 
-    iterator operator++(int) {
-      iterator tmp(*this);
+    Iterator operator++(int) {
+      Iterator tmp(*this);
       operator++();
       return tmp;
     }
 
-    bool operator==(const iterator &rhs) const { return it == rhs.it; }
+    bool operator==(const Iterator &rhs) const { return it == rhs.it; }
 
-    bool operator!=(const iterator &rhs) const { return it != rhs.it; }
+    bool operator!=(const Iterator &rhs) const { return it != rhs.it; }
 
    private:
     typename InnerContainer::iterator it;
     typename InnerContainer::iterator eit;
   };
 
-  iterator begin() {
+  Iterator begin() {
     if (table.empty())
-      return iterator{table.end(), table.end()};
+      return Iterator{table.end(), table.end()};
 
     auto it = table.begin();
     while (!it->first) {
       ++it;
     }
 
-    return iterator{it, table.end()};
+    return Iterator{it, table.end()};
   }
 
-  iterator end() {
-    return iterator{table.end(), table.end()};
+  Iterator end() {
+    return Iterator{table.end(), table.end()};
   }
 
  private:
-  InnerContainer table;
+  InnerContainer table{_Size};
   std::hash<_Key> hash;
-  std::size_t size = 0;
+  std::size_t currentSize = 0;
 };
 
 #endif //STRING_DICTIONARIES_HASHTABLELINEARPROBING_H

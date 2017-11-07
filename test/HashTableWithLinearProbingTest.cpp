@@ -8,14 +8,23 @@
 
 TEST(HashTableWithLinearProbing, add) {
   HashTableWithLinearProbing<int, 10> map;
-  map.insert("a", 1);
-  EXPECT_EQ(1, map.search("a"));
-  map.insert("b", 2);
-  EXPECT_EQ(2, map.search("b"));
-  map.insert("a", 3);
-  EXPECT_EQ(3, map.search("a"));
-}
+  EXPECT_EQ(0, map.size());
 
+  EXPECT_TRUE(map.insert("a", 17));
+  EXPECT_EQ(17, map.search("a"));
+  EXPECT_EQ(1, map.size());
+
+  EXPECT_TRUE(map.insert("b", 13));
+  EXPECT_EQ(13, map.search("b"));
+  EXPECT_EQ(2, map.size());
+
+  EXPECT_FALSE(map.insert("a", 7));
+  EXPECT_EQ(2, map.size());
+
+  EXPECT_TRUE(map.insert("xxx", 7));
+  EXPECT_EQ(7, map.search("xxx"));
+  EXPECT_EQ(3, map.size());
+}
 
 TEST(HashTableWithLinearProbing, asMap) {
   HashTableWithLinearProbing<int, 1> map;
@@ -27,19 +36,18 @@ TEST(HashTableWithLinearProbing, asMap) {
   EXPECT_ANY_THROW(map["y"]);
 }
 
-
 TEST(HashTableWithLinearProbing, iterator) {
-  std::set<std::pair<std::string, int>> s = {{"a", 1}, {"b", 2}, {"c", 3}, {"d", 4}, {"xxx", 13}};
+  std::set<std::pair<std::string, int>> eSet = {{"a", 1}, {"b", 2}, {"c", 3}, {"d", 4}, {"xxx", 13}};
 
   HashTableWithLinearProbing<int, 10> map;
-  for (auto &&item : s) {
+  for (auto &&item : eSet) {
     map[item.first] = item.second;
   }
 
-  std::set<std::pair<std::string, int>> s1;
+  std::set<std::pair<std::string, int>> rSet;
   for (auto &&item : map) {
-    s1.insert(item);
+    rSet.insert(item);
   }
 
-  EXPECT_EQ(s, s1);
+  EXPECT_EQ(eSet, rSet);
 }
