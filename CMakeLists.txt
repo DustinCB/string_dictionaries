@@ -21,7 +21,7 @@ include_directories(${COMMON_INCLUDES})
 #add_library(${PROJECT_LIB_NAME} ${SRC_FILES})
 
 
-set(SOURCE_FILES include/string-dictionaries/HashTableWithLinearProbing.h src/HashTableWithLinearProbing.cpp)
+set(SOURCE_FILES include/string-dictionaries/HashTableWithLinearProbing.h src/HashTableWithLinearProbing.cpp include/string-dictionaries/BlindTree.h)
 add_library(string_dictionaries ${SOURCE_FILES})
 
 
@@ -30,22 +30,22 @@ set(LIBS string_dictionaries)
 
 find_package(Threads REQUIRED)
 find_package(GTest)
-IF (GTEST_FOUND)
+if (GTEST_FOUND)
     set(LIBS ${LIBS} GTest::Main)
-ELSE()
+else ()
 
-    if(CMAKE_COMPILER_IS_GNUCXX)
+    if (CMAKE_COMPILER_IS_GNUCXX)
         add_definitions(-Wall -ansi -Wno-deprecated -pthread)
-    endif()
+    endif ()
 
-    if(MSVC)
+    if (MSVC)
         #vc 2012 fix for vararg templates
         set(MSVC_COMPILER_DEFS "-D_VARIADIC_MAX=10")
-    endif()
+    endif ()
 
     add_subdirectory(${EXT_PROJECTS_DIR}/gtest)
     set(LIBS ${LIBS} ${GTEST_LIBS_DIR}/libgtest.a ${GTEST_LIBS_DIR}/libgtest_main.a)
-ENDIF()
+endif ()
 
 include(cmake/internal_utils.cmake)
 
