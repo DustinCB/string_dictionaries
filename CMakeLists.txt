@@ -51,3 +51,5 @@ include(cmake/internal_utils.cmake)
 
 include_directories(${GTEST_INCLUDE_DIRS})
 cxx_test_with_flags(hash_table_with_linear_probing_test "" "${LIBS}" test/HashTableWithLinearProbingTest.cpp)
+
+cxx_test_with_flags(performance_test "" "${LIBS}" test/performance_test.cpp)
