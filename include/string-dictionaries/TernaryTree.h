@@ -82,7 +82,7 @@ class TernaryTree {
   T &operator[](const std::string &s) {
 
     int p = 0;
-    T obj;
+    T obj{};
 
     if (root == NULL) {
       root = new TernaryNode(1, s[p]);

@@ -102,7 +102,7 @@ class BlindTree {
   void sufixArray(std::vector<int> &sfxA) { sufixArrayAux(root, sfxA); }
 
   T &operator[](std::string s) {
-    T obj;
+    T obj{};
     std::pair<std::string, T> p = std::make_pair(s, obj);
 
     int gap = 0, pos = 0;

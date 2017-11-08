@@ -8,7 +8,6 @@
 #include "string-dictionaries/BlindTree.h"
 #include "string-dictionaries/TernaryTree.h"
 
-
 template<typename T>
 class DictionaryTC : public ::testing::Test {
 };
@@ -54,6 +53,23 @@ TYPED_TEST(DictionaryTC, iterator) {
   }
 
   EXPECT_EQ(eSet, rSet);
+}
+
+TYPED_TEST(DictionaryTC, search) {
+  TypeParam map;
+
+  std::vector<std::string> eText = {"this", "is", "a", "simple", "text", "for", "a", "simple", "test"};
+  for (auto &&item : eText) {
+    ++map[item];
+  }
+  EXPECT_GT(eText.size(), map.size());
+  EXPECT_EQ(eText.size() - 2, map.size());
+
+  int rC = 0;
+  for (auto &&item : map) {
+    rC += item.second;
+  }
+  EXPECT_EQ(eText.size(), rC);
 }
 
 TEST(HashTableWithLinearProbing, asMap) {
