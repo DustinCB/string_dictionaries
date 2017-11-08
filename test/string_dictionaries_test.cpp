@@ -6,12 +6,14 @@
 
 #include "string-dictionaries/HashTableWithLinearProbing.h"
 #include "string-dictionaries/BlindTree.h"
+#include "string-dictionaries/TernaryTree.h"
+
 
 template<typename T>
 class DictionaryTC : public ::testing::Test {
 };
 
-typedef ::testing::Types<HashTableWithLinearProbing<int, 10>, BlindTree<int>> MyTypes;
+typedef ::testing::Types<HashTableWithLinearProbing<int, 10>, BlindTree<int>, TernaryTree<int>> MyTypes;
 TYPED_TEST_CASE(DictionaryTC, MyTypes);
 
 TYPED_TEST(DictionaryTC, add) {
