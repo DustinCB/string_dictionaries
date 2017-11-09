@@ -6,8 +6,7 @@
 #define STRING_DICTIONARIES_HASHTABLELINEARPROBING_H
 
 #include <utility>
-#include <array>
-#include <iostream>
+#include <vector>
 
 template<typename _Value, std::size_t _Size>
 class HashTableWithLinearProbing {
@@ -36,16 +35,17 @@ class HashTableWithLinearProbing {
     return true;
   }
 
-  const _Value &search(const _Key &_key) const {
+  //const _Value &search(const _Key &_key) const {
+  bool search(const _Key &_key) const {
     auto i = hash(_key) % _Size;
     while (table[i].first && table[i].second.first != _key) {
       i = (i + 1) % _Size;
     }
 
     if (!table[i].first || table[i].second.first != _key)
-      throw std::exception{};
+      return false;//throw std::exception{};
 
-    return table[i].second.second;
+    return true;//return table[i].second.second;
   }
 
   _Value &operator[](const _Key &_key) {
@@ -65,6 +65,15 @@ class HashTableWithLinearProbing {
     }
 
     return table[i].second.second;
+  }
+
+  template<typename _O>
+  void traverse(_O &_o) {
+    for (auto &&item : table) {
+      if (item.first) {
+        _o(item.second);
+      }
+    }
   }
 
   std::size_t size() const {
@@ -119,6 +128,16 @@ class HashTableWithLinearProbing {
 
   Iterator end() {
     return Iterator{table.end(), table.end()};
+  }
+
+  size_t size_of() {
+    size_t size = 0;
+
+    for (int i = 0; i < table.size(); ++i) {
+      size += sizeof(table[i]);
+    }
+
+    return size + sizeof(hash) + sizeof(currentSize);
   }
 
  private:
