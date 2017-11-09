@@ -20,12 +20,12 @@ TYPED_TEST(DictionaryTC, add) {
   EXPECT_EQ(0, map.size());
 
   EXPECT_TRUE(map.insert("a", 17));
-  EXPECT_EQ(17, map.search("a"));
+  EXPECT_TRUE(map.search("a"));
   EXPECT_EQ(17, map["a"]);
   EXPECT_EQ(1, map.size());
 
   EXPECT_TRUE(map.insert("b", 13));
-  EXPECT_EQ(13, map.search("b"));
+  EXPECT_TRUE(map.search("b"));
   EXPECT_EQ(13, map["b"]);
   EXPECT_EQ(2, map.size());
 
@@ -34,7 +34,7 @@ TYPED_TEST(DictionaryTC, add) {
   EXPECT_EQ(2, map.size());
 
   EXPECT_TRUE(map.insert("xxx", 7));
-  EXPECT_EQ(7, map.search("xxx"));
+  EXPECT_TRUE(map.search("xxx"));
   EXPECT_EQ(7, map["xxx"]);
   EXPECT_EQ(3, map.size());
 }
