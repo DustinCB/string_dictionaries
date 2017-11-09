@@ -38,17 +38,22 @@ class TernaryTree {
     delete root;
   };
 
-  T &search(const std::string &s) {
+  size_t size_of() {
+    return sizeof(dictionary) + sizeWalk(root) + sizeof(n_nodes);
+  }
+
+  //T &search(const std::string &s) {
+  bool search(const std::string &s) {
     int p = 0;
 
     TernaryNode *matchNode = searchAux(s, p, root);
 
     //CASO LLEGA A UN NODO VACIO SIN ENCONTRAR LA CADENA
     if (matchNode == NULL) {
-      throw std::exception{};
+      return false;//throw std::exception{};
     }
     //CASO BASE ENCUENTRA LA CADENA
-    return dictionary[matchNode->key].second;
+    return true;//return dictionary[matchNode->key].second;
   }
 
   bool insert(const std::string &s, const T &obj) {
@@ -112,12 +117,19 @@ class TernaryTree {
 
   std::size_t size() const { return dictionary.size(); }
 
+  int nodesNumber() { return n_nodes; }
+
   typename std::vector<std::pair<std::string, T> >::iterator begin() {// INTERFAZ DE ITERADOR
     return dictionary.begin();
   }
 
   typename std::vector<std::pair<std::string, T> >::iterator end() {// INTERFAZ DE ITERADOR
     return dictionary.end();
+  }
+
+  template<class O>
+  void traverse(O &obj) {
+    auxDFS(root, obj);
   }
 
   void print() {
@@ -264,6 +276,19 @@ class TernaryTree {
 
   }
 
+  template<class O>
+  void auxDFS(TernaryNode *node, O &obj) {
+    if (node == NULL)return;
+
+    if (node->tag == '$') {
+      obj(dictionary[node->key]);
+    };
+
+    auxDFS(node->left, obj);
+    auxDFS(node->central, obj);
+    auxDFS(node->right, obj);
+  }
+
   void deleteAux(TernaryNode *node) {
 
     if (node == NULL)
@@ -281,6 +306,22 @@ class TernaryTree {
       deleteAux(node->right);
       delete node->right;
     }
+
+  }
+
+  size_t sizeWalk(TernaryNode *node) {
+
+    if (node == NULL) return 0;
+
+    size_t size = sizeof(node->id)
+        + sizeof(node->tag)
+        + sizeof(node->key);
+
+    size += sizeWalk(node->left);
+    size += sizeWalk(node->central);
+    size += sizeWalk(node->right);
+
+    return size;
 
   }
 
