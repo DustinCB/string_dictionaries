@@ -8,18 +8,22 @@
 #include <utility>
 #include <vector>
 
-template<typename _Value, std::size_t _Size>
+template<typename _Value, std::size_t _Size = 50000>
 class HashTableWithLinearProbing {
  public:
+
+  HashTableWithLinearProbing(){}
+  HashTableWithLinearProbing(std::size_t _size): SIZE{_size} {}
+
   using _Key = std::string;
 
   bool insert(const _Key &_key, const _Value &_value) {
-    if (currentSize == _Size)
+    if (currentSize == SIZE)
       return false;
 
-    auto i = hash(_key) % _Size;
+    auto i = hash(_key) % SIZE;
     while (table[i].first && table[i].second.first != _key) {
-      i = (i + 1) % _Size;
+      i = (i + 1) % SIZE;
     }
 
     if (table[i].first)
@@ -37,9 +41,9 @@ class HashTableWithLinearProbing {
 
   //const _Value &search(const _Key &_key) const {
   bool search(const _Key &_key) const {
-    auto i = hash(_key) % _Size;
+    auto i = hash(_key) % SIZE;
     while (table[i].first && table[i].second.first != _key) {
-      i = (i + 1) % _Size;
+      i = (i + 1) % SIZE;
     }
 
     if (!table[i].first || table[i].second.first != _key)
@@ -49,10 +53,10 @@ class HashTableWithLinearProbing {
   }
 
   _Value &operator[](const _Key &_key) {
-    auto s = _Size + 1;
-    auto i = hash(_key) % _Size;
+    auto s = SIZE + 1;
+    auto i = hash(_key) % SIZE;
     while (--s && table[i].first && table[i].second.first != _key) {
-      i = (i + 1) % _Size;
+      i = (i + 1) % SIZE;
     }
 
     if (!s)
@@ -78,6 +82,10 @@ class HashTableWithLinearProbing {
 
   std::size_t size() const {
     return currentSize;
+  }
+
+  std::size_t capacity() const {
+    return table.size();
   }
 
  private:
@@ -141,7 +149,8 @@ class HashTableWithLinearProbing {
   }
 
  private:
-  InnerContainer table{_Size};
+  const std::size_t SIZE = _Size;
+  InnerContainer table{SIZE};
   std::hash<_Key> hash;
   std::size_t currentSize = 0;
 };

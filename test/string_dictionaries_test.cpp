@@ -72,6 +72,17 @@ TYPED_TEST(DictionaryTC, search) {
   EXPECT_EQ(eText.size(), rC);
 }
 
+TEST(HashTableWithLinearProbing, constructor) {
+  HashTableWithLinearProbing<int, 2> map1;
+  EXPECT_EQ(2, map1.capacity());
+
+  HashTableWithLinearProbing<int, 2> map2{100};
+  EXPECT_EQ(100, map2.capacity());
+
+  HashTableWithLinearProbing<int> map3{20};
+  EXPECT_EQ(20, map3.capacity());
+}
+
 TEST(HashTableWithLinearProbing, asMap) {
   HashTableWithLinearProbing<int, 2> map;
   EXPECT_EQ(0, map["x"]);
