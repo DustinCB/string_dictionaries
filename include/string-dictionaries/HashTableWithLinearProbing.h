@@ -6,21 +6,24 @@
 #define STRING_DICTIONARIES_HASHTABLELINEARPROBING_H
 
 #include <utility>
-#include <array>
-#include <iostream>
+#include <vector>
 
-template<typename _Value, std::size_t _Size>
+template<typename _Value, typename _Hash = std::hash<std::string>>
 class HashTableWithLinearProbing {
  public:
+
+  HashTableWithLinearProbing(){}
+  HashTableWithLinearProbing(std::size_t _size): SIZE{_size} {}
+
   using _Key = std::string;
 
   bool insert(const _Key &_key, const _Value &_value) {
-    if (currentSize == _Size)
+    if (currentSize == SIZE)
       return false;
 
-    auto i = hash(_key) % _Size;
+    auto i = hash(_key) % SIZE;
     while (table[i].first && table[i].second.first != _key) {
-      i = (i + 1) % _Size;
+      i = (i + 1) % SIZE;
     }
 
     if (table[i].first)
@@ -36,23 +39,22 @@ class HashTableWithLinearProbing {
     return true;
   }
 
-  const _Value &search(const _Key &_key) const {
-    auto i = hash(_key) % _Size;
+  //const _Value &search(const _Key &_key) const {
+  bool search(const _Key &_key) const {
+    auto i = hash(_key) % SIZE;
     while (table[i].first && table[i].second.first != _key) {
-      i = (i + 1) % _Size;
+      i = (i + 1) % SIZE;
     }
 
-    if (!table[i].first || table[i].second.first != _key)
-      throw std::exception{};
-
-    return table[i].second.second;
+    return !(!table[i].first || table[i].second.first != _key);
   }
 
+
   _Value &operator[](const _Key &_key) {
-    auto s = _Size + 1;
-    auto i = hash(_key) % _Size;
+    auto s = SIZE + 1;
+    auto i = hash(_key) % SIZE;
     while (--s && table[i].first && table[i].second.first != _key) {
-      i = (i + 1) % _Size;
+      i = (i + 1) % SIZE;
     }
 
     if (!s)
@@ -67,8 +69,21 @@ class HashTableWithLinearProbing {
     return table[i].second.second;
   }
 
+  template<typename _O>
+  void traverse(_O &_o) {
+    for (auto &&item : table) {
+      if (item.first) {
+        _o(item.second);
+      }
+    }
+  }
+
   std::size_t size() const {
     return currentSize;
+  }
+
+  std::size_t capacity() const {
+    return table.size();
   }
 
  private:
@@ -121,9 +136,20 @@ class HashTableWithLinearProbing {
     return Iterator{table.end(), table.end()};
   }
 
+  size_t size_of() {
+    size_t size = 0;
+
+    for (int i = 0; i < table.size(); ++i) {
+      size += sizeof(table[i]);
+    }
+
+    return size + sizeof(hash) + sizeof(currentSize);
+  }
+
  private:
-  InnerContainer table{_Size};
-  std::hash<_Key> hash;
+  const std::size_t SIZE = 50000;
+  InnerContainer table{SIZE};
+  _Hash hash;
   std::size_t currentSize = 0;
 };
 
