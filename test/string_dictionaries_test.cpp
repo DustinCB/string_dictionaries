@@ -8,12 +8,14 @@
 #include "string-dictionaries/BlindTree.h"
 #include "string-dictionaries/TernaryTree.h"
 
+#include "string-dictionaries/hash_function.h"
+
 template<typename T>
 class DictionaryTC : public ::testing::Test {
 };
 
-typedef ::testing::Types<HashTableWithLinearProbing<int, 10>, BlindTree<int>, TernaryTree<int>> MyTypes;
-TYPED_TEST_CASE(DictionaryTC, MyTypes);
+typedef ::testing::Types<HashTableWithLinearProbing<int>, BlindTree<int>, TernaryTree<int>> DictionaryTypes;
+TYPED_TEST_CASE(DictionaryTC, DictionaryTypes);
 
 TYPED_TEST(DictionaryTC, add) {
   TypeParam map;
@@ -72,11 +74,43 @@ TYPED_TEST(DictionaryTC, search) {
   EXPECT_EQ(eText.size(), rC);
 }
 
+
+
+/*
+ * Hash Function Test
+ */
+template<typename T>
+class HashFunctionTC : public ::testing::Test {
+};
+
+typedef ::testing::Types<std::hash<std::string>, HashDjb2, HashSdbm, HashHorner> HashTypes;
+TYPED_TEST_CASE(HashFunctionTC, HashTypes);
+
+TYPED_TEST(HashFunctionTC, string) {
+  TypeParam hash;
+
+  std::cout << "\thash(\"x\") = " << hash("x") << std::endl;
+  std::cout << "\thash(\"foo\") = " << hash("foo") << std::endl;
+
+  EXPECT_EQ(hash("foo"), hash("foo"));
+  EXPECT_EQ(hash("bar"), hash("bar"));
+
+  EXPECT_NE(hash("foo"), hash("foofoo"));
+  EXPECT_NE(hash("foo"), hash("bar"));
+  EXPECT_NE(hash("foobar"), hash("barfoo"));
+  EXPECT_NE(hash("bar"), hash("x"));
+  EXPECT_NE(hash(""), hash(" "));
+}
+
+
+/*
+ * Hash Table Test
+ */
 TEST(HashTableWithLinearProbing, constructor) {
-  HashTableWithLinearProbing<int, 2> map1;
+  HashTableWithLinearProbing<int> map1{2};
   EXPECT_EQ(2, map1.capacity());
 
-  HashTableWithLinearProbing<int, 2> map2{100};
+  HashTableWithLinearProbing<int> map2{100};
   EXPECT_EQ(100, map2.capacity());
 
   HashTableWithLinearProbing<int> map3{20};
@@ -84,7 +118,7 @@ TEST(HashTableWithLinearProbing, constructor) {
 }
 
 TEST(HashTableWithLinearProbing, asMap) {
-  HashTableWithLinearProbing<int, 2> map;
+  HashTableWithLinearProbing<int> map{2};
   EXPECT_EQ(0, map["x"]);
   EXPECT_EQ(0, map["y"]);
 
