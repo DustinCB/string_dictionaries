@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-template<typename _Value, std::size_t _Size = 50000>
+template<typename _Value, typename _Hash = std::hash<std::string>>
 class HashTableWithLinearProbing {
  public:
 
@@ -46,11 +46,9 @@ class HashTableWithLinearProbing {
       i = (i + 1) % SIZE;
     }
 
-    if (!table[i].first || table[i].second.first != _key)
-      return false;//throw std::exception{};
-
-    return true;//return table[i].second.second;
+    return !(!table[i].first || table[i].second.first != _key);
   }
+
 
   _Value &operator[](const _Key &_key) {
     auto s = SIZE + 1;
@@ -149,9 +147,9 @@ class HashTableWithLinearProbing {
   }
 
  private:
-  const std::size_t SIZE = _Size;
+  const std::size_t SIZE = 50000;
   InnerContainer table{SIZE};
-  std::hash<_Key> hash;
+  _Hash hash;
   std::size_t currentSize = 0;
 };
 
