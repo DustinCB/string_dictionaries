@@ -34,9 +34,10 @@ include_directories(${COMMON_INCLUDES})
 
 set(SOURCE_FILES
         include/string-dictionaries/HashTableWithLinearProbing.h
-        src/HashTableWithLinearProbing.cpp
         include/string-dictionaries/BlindTree.h
-        include/string-dictionaries/TernaryTree.h include/string-dictionaries/hash_function.h src/hash_function.cpp)
+        include/string-dictionaries/TernaryTree.h
+        include/string-dictionaries/hash_function.h
+        src/hash_function.cpp)
 
 add_library(string_dictionaries ${SOURCE_FILES})
 
@@ -46,6 +47,8 @@ include(CTest)
 set(LIBS string_dictionaries)
 
 find_package(Threads REQUIRED)
+set(LIBS ${LIBS} Threads::Threads)
+
 find_package(GTest)
 if (GTEST_FOUND)
     set(LIBS ${LIBS} GTest::Main)
