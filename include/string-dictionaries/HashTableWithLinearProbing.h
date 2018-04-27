@@ -8,15 +8,28 @@
 #include <utility>
 #include <vector>
 
+/**
+ * Tabla hash con exploración lineal.
+ *
+ * @tparam _Value Tipo del valor a contener.
+ * @tparam _Hash Función hash para cadena de caracteres a usar con las llaves.
+ */
 template<typename _Value, typename _Hash = std::hash<std::string>>
 class HashTableWithLinearProbing {
  public:
-
-  HashTableWithLinearProbing(){}
-  HashTableWithLinearProbing(std::size_t _size): SIZE{_size} {}
+  HashTableWithLinearProbing() {}
+  HashTableWithLinearProbing(std::size_t _size) : SIZE{_size} {}
 
   using _Key = std::string;
 
+
+  /**
+   * Función para insertar un elemento con su valor a la estructura
+   *
+   * @param _key Llave (cadena de caracteres)
+   * @param _value Valor (Tipo plantilla dado a la clase)
+   * @return true si el elemento no existía y es insertado, false en caso contrario
+   */
   bool insert(const _Key &_key, const _Value &_value) {
     if (currentSize == SIZE)
       return false;
@@ -39,7 +52,12 @@ class HashTableWithLinearProbing {
     return true;
   }
 
-  //const _Value &search(const _Key &_key) const {
+
+  /**
+   * Función para buscar un elemento
+   * @param _key Llave
+   * @return true si el elemento existe en la estructura, false en caso contrario
+   */
   bool search(const _Key &_key) const {
     auto i = hash(_key) % SIZE;
     while (table[i].first && table[i].second.first != _key) {
@@ -50,6 +68,11 @@ class HashTableWithLinearProbing {
   }
 
 
+  /**
+   * Operador para acceder al valor de un elemento
+   * @param _key LLave
+   * @return Referencia al valor asociado a la llave dada
+   */
   _Value &operator[](const _Key &_key) {
     auto s = SIZE + 1;
     auto i = hash(_key) % SIZE;
@@ -69,6 +92,12 @@ class HashTableWithLinearProbing {
     return table[i].second.second;
   }
 
+
+  /**
+   * Función para recorrer la estructura y ejecutar la operación dada sobre cada par <llave, valor>
+   * @tparam _O Tipo plantilla de la operación
+   * @param _o Operación a ejecutar sobre cada par <llave, valor>
+   */
   template<typename _O>
   void traverse(_O &_o) {
     for (auto &&item : table) {
@@ -78,10 +107,20 @@ class HashTableWithLinearProbing {
     }
   }
 
+
+  /**
+   * Función que devuelve la cantidad de elementos contenidos en la estructura
+   * @return Cantidad de elementos
+   */
   std::size_t size() const {
     return currentSize;
   }
 
+
+  /**
+   * Función que retorna la cantidad máxima de elementos que pueden ser almacenados en la estructura
+   * @return Cantidad máxima de elementos
+   */
   std::size_t capacity() const {
     return table.size();
   }
@@ -90,6 +129,11 @@ class HashTableWithLinearProbing {
   using InnerContainer = std::vector<std::pair<bool, std::pair<_Key, _Value>>>;
 
  public:
+  /**
+   * Iterador para poder recorrer la clase como un contenedor de la STL (begin, end).
+   *
+   * El iterador debe manejar los saltos presentes en la tabla, es decir, las posiciones sin elementos.
+   */
   class Iterator {
    public:
     Iterator(const typename InnerContainer::iterator &_it,
@@ -120,6 +164,11 @@ class HashTableWithLinearProbing {
     typename InnerContainer::iterator eit;
   };
 
+
+  /**
+   * Iterador al primer elemento
+   * @return Iterador al primer elemento
+   */
   Iterator begin() {
     if (table.empty())
       return Iterator{table.end(), table.end()};
@@ -132,19 +181,15 @@ class HashTableWithLinearProbing {
     return Iterator{it, table.end()};
   }
 
+
+  /**
+   * Iterador al último elemento
+   * @return Iterador al último elemento
+   */
   Iterator end() {
     return Iterator{table.end(), table.end()};
   }
 
-  size_t size_of() {
-    size_t size = 0;
-
-    for (int i = 0; i < table.size(); ++i) {
-      size += sizeof(table[i]);
-    }
-
-    return size + sizeof(hash) + sizeof(currentSize);
-  }
 
  private:
   const std::size_t SIZE = 50000;
